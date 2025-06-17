@@ -1,0 +1,433 @@
+﻿@using global::BlazorToast.Models
+@using global::BlazorToast.Services
+@using Microsoft.JSInterop
+@inject BlazorToastService ToastService
+@inject IJSRuntime JS
+@implements IDisposable
+
+
+<div class="zl-blazor-toast-container @(ToastService.Config.ContainerClassName ?? "")"
+     style="@(ToastService.Config.ContainerStyle ?? "")">
+
+    @foreach (var position in Enum.GetValues<ToastPosition>())
+    {
+        var positionToasts = _visibleToasts.Where(t => t.Message.Position == position).ToList();
+        if (positionToasts.Any())
+        {
+            <div class="zl-blazor-toast-position-wrapper @GetPositionClass(position)"
+                 role="region"
+                 aria-label="@GetPositionAriaLabel(position)">
+
+                @foreach (var toast in positionToasts)
+                {
+                    <div class="zl-blazor-toast @GetToastClasses(toast)"
+                         @onclick="() => HandleToastClick(toast.Message)"
+                         @onmouseenter="() => HandleMouseEnter(toast.Message)"
+                         @onmouseleave="() => HandleMouseLeave(toast.Message)"
+                         @onclick:stopPropagation
+                         style="@GetToastStyle(toast)"
+                         role="@toast.Message.Role"
+                         aria-label="@toast.Message.AriaLabel"
+                         aria-describedby="@(toast.Message.AriaDescription != null ? $"toast-desc-{toast.Message.Id}" : null)"
+                         aria-live="@(toast.Message.IsImportant ? "assertive" : "polite")"
+                         tabindex="@(toast.Message.CloseOnClick ? "0" : "-1")"
+                         @key="toast.Message.Id">
+
+                        @* Progress bar *@
+                        @if (toast.Message.Progress.Show)
+                        {
+                            <div class="zl-blazor-toast-progress">
+                                <div class="zl-blazor-toast-progress-bar @(toast.Message.Progress.Animated ? "zl-animated" : "")"
+                                     style="width: @(toast.Message.Progress.Value * 100)%; @(toast.Message.Progress.Color != null ? $"background-color: {toast.Message.Progress.Color};" : "")">
+                                </div>
+                            </div>
+                        }
+
+                        @* Custom content takes precedence *@
+                        @if (toast.Message.CustomContent != null)
+                        {
+                            <div class="zl-blazor-toast-custom-content">
+                                @toast.Message.CustomContent
+                            </div>
+                        }
+                        else
+                        {
+                            @* Icon section *@
+                            @if (toast.Message.CustomIcon != null || !string.IsNullOrEmpty(toast.Message.Icon))
+                            {
+                                <div class="zl-blazor-toast-icon @GetIconClasses(toast.Message)">
+                                    @if (toast.Message.CustomIcon != null)
+                                    {
+                                        @toast.Message.CustomIcon
+                                    }
+                                    else if (!string.IsNullOrEmpty(toast.Message.Icon))
+                                    {
+                                        @if (toast.Message.Type == ToastType.Loading)
+                                        {
+                                            <div class="zl-blazor-toast-loading-spinner">
+                                                @((MarkupString)toast.Message.Icon)
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @((MarkupString)toast.Message.Icon)
+                                        }
+                                    }
+                                </div>
+                            }
+
+                            @* Content section *@
+                            <div class="zl-blazor-toast-content">
+                                <div class="zl-blazor-toast-message">
+                                    @toast.Message.Message
+                                </div>
+
+                                @* Aria description *@
+                                @if (!string.IsNullOrEmpty(toast.Message.AriaDescription))
+                                {
+                                    <div id="toast-desc-@toast.Message.Id" class="zl-sr-only">
+                                        @toast.Message.AriaDescription
+                                    </div>
+                                }
+
+                                @* Action buttons *@
+                                @if (toast.Message.Actions.Any())
+                                {
+                                    <div class="zl-blazor-toast-actions">
+                                        @foreach (var action in toast.Message.Actions)
+                                        {
+                                            <button class="zl-blazor-toast-action-button @(action.IsPrimary ? "zl-primary" : "zl-secondary") @(action.CssClass ?? "")"
+                                                    @onclick="() => HandleActionClick(action, toast.Message.Id)"
+                                                    @onclick:stopPropagation
+                                                    type="button">
+                                                @action.Label
+                                            </button>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @* Close button *@
+                        @if (toast.Message.ShowCloseButton && !toast.Message.IsLoading)
+                        {
+                            <button class="zl-blazor-toast-close-button"
+                                    @onclick="() => DismissWithAnimation(toast.Message.Id)"
+                                    @onclick:stopPropagation
+                                    type="button"
+                                    aria-label="Close notification"
+                                    title="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+
+        }
+    }
+</div>
+
+
+@if (ToastService.Config.ShowHiddenToastCount && ToastService.HasHiddenToasts)
+{
+    var primaryPosition = GetPrimaryPosition();
+    <div class="zl-blazor-toast-position-wrapper @GetPositionClass(primaryPosition)">
+        <div class="zl-blazor-toast-hidden-count @ToastService.Config.HiddenToastCountClass"
+             style="@ToastService.Config.HiddenToastCountStyle"
+             @onclick="HandleShowAllHiddenToasts"
+             role="button"
+             tabindex="0"
+             aria-label="Show @ToastService.HiddenToastCount hidden notifications"
+             title="Click to show all hidden notifications">
+            @string.Format(ToastService.Config.HiddenToastCountTemplate, ToastService.HiddenToastCount)
+        </div>
+    </div>
+}
+
+@code {
+    private record ToastItem(ToastMessage Message, bool IsExiting, DateTime ExitStartTime = default);
+    private List<ToastItem> _visibleToasts = new();
+    private bool _isDisposed = false;
+    private ToastTheme _systemTheme = ToastTheme.Light;  // default until we know
+
+    protected override async Task OnInitializedAsync()
+    {
+        ToastService.OnToastsChanged += UpdateToasts;
+        try
+        {
+            var theme = await JS.InvokeAsync<string>("BlazorToastJsServices.getSystemTheme");
+            _systemTheme = theme == "dark" ? ToastTheme.Dark : ToastTheme.Light;
+        }
+        catch
+        {
+            // if anything fails, _systemTheme stays Light
+        }
+        UpdateToasts(); // Remove await since it's now void
+    }
+
+    private void UpdateToasts()
+    {
+        if (_isDisposed) return;
+
+        var now = DateTime.UtcNow;
+
+        // Find toasts in _visibleToasts that are no longer in ActiveToasts
+        var toExit = _visibleToasts
+            .Where(t => !ToastService.ActiveToasts.Any(active => active.Id == t.Message.Id))
+            .ToList();
+
+        // Mark them as exiting if not already
+        foreach (var toast in toExit)
+        {
+            if (!toast.IsExiting)
+            {
+                var index = _visibleToasts.IndexOf(toast);
+                _visibleToasts[index] = toast with { IsExiting = true, ExitStartTime = now };
+            }
+        }
+
+        // Remove toasts that have completed their exit animation
+        _visibleToasts.RemoveAll(t =>
+            t.IsExiting &&
+            (now - t.ExitStartTime).TotalMilliseconds > t.Message.Animation.Duration);
+
+        // Add new toasts
+        foreach (var toast in ToastService.VisibleToasts)
+        {
+            if (!_visibleToasts.Any(t => t.Message.Id == toast.Id))
+            {
+                _visibleToasts.Add(new ToastItem(toast, false));
+                _ = PlayToastSound(toast);
+            }
+        }
+
+        // Update existing toasts
+        for (int i = 0; i < _visibleToasts.Count; i++)
+        {
+            var visibleToast = _visibleToasts[i];
+            var activeToast = ToastService.ActiveToasts.FirstOrDefault(t => t.Id == visibleToast.Message.Id);
+            if (activeToast != null && !ReferenceEquals(visibleToast.Message, activeToast))
+            {
+                _visibleToasts[i] = visibleToast with { Message = activeToast };
+            }
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private ToastPosition GetPrimaryPosition()
+    {
+        // Find the position with the most toasts, fallback to default position
+        var positions = _visibleToasts.GroupBy(t => t.Message.Position)
+            .OrderByDescending(g => g.Count())
+            .FirstOrDefault();
+
+        return positions?.Key ?? ToastService.Config.DefaultPosition;
+    }
+
+    private async Task HandleShowAllHiddenToasts()
+    {
+        await ToastService.ShowAllHiddenToasts();
+    }
+
+    private async Task DismissWithAnimation(Guid id)
+    {
+        var toast = _visibleToasts.FirstOrDefault(t => t.Message.Id == id);
+        if (toast != null && !toast.IsExiting)
+        {
+            // Start exit animation
+            var index = _visibleToasts.IndexOf(toast);
+            _visibleToasts[index] = toast with { IsExiting = true, ExitStartTime = DateTime.UtcNow };
+
+            await InvokeAsync(StateHasChanged);
+
+            // Wait for animation to complete, then dismiss
+            await Task.Delay(toast.Message.Animation.Duration);
+            await ToastService.DismissToast(id);
+        }
+    }
+
+    private async Task HandleToastClick(ToastMessage toast)
+    {
+        await ToastService.OnToastClick(toast.Id);
+    }
+
+    private void HandleMouseEnter(ToastMessage toast) // Changed to void
+    {
+        ToastService.OnToastMouseEnter(toast.Id);
+    }
+
+    private void HandleMouseLeave(ToastMessage toast) // Changed to void
+    {
+        ToastService.OnToastMouseLeave(toast.Id);
+    }
+
+    private async Task HandleActionClick(ToastAction action, Guid toastId)
+    {
+        try
+        {
+            await action.Action();
+
+            if (action.CloseToastAfterAction)
+            {
+                await DismissWithAnimation(toastId);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Optionally log the error or show an error toast
+            Console.WriteLine($"Toast action failed: {ex.Message}");
+        }
+    }
+
+    private string GetToastClasses(ToastItem toast)
+    {
+        var classes = new List<string>
+        {
+            $"zl-blazor-toast-{toast.Message.Type.ToString().ToLower()}",
+            $"zl-theme-{GetResolvedTheme(toast.Message).ToString().ToLower()}",
+            toast.Message.CustomClass ?? string.Empty
+        };
+
+        // Animation classes
+        if (toast.IsExiting)
+        {
+            classes.Add(toast.Message.Animation.ExitClass);
+        }
+        else
+        {
+            classes.Add(toast.Message.Animation.EnterClass);
+        }
+
+        // State classes
+        if (toast.Message.IsLoading)
+        {
+            classes.Add("zl-loading");
+        }
+
+        if (toast.Message.IsPersistent)
+        {
+            classes.Add("zl-persistent");
+        }
+
+        if (toast.Message.IsImportant)
+        {
+            classes.Add("zl-important");
+        }
+
+        if (toast.Message.Progress.Show)
+        {
+            classes.Add("zl-has-progress");
+        }
+
+        if (toast.Message.Actions.Any())
+        {
+            classes.Add("zl-has-actions");
+        }
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+    }
+
+    private string GetIconClasses(ToastMessage toast)
+    {
+        var classes = new List<string> { "zl-icon" };
+
+        if (toast.Type == ToastType.Loading)
+        {
+            classes.Add("zl-loading-icon");
+        }
+
+        return string.Join(" ", classes);
+    }
+
+    private string GetToastStyle(ToastItem toast)
+    {
+        var styles = new List<string>();
+
+        // Custom style
+        if (!string.IsNullOrEmpty(toast.Message.CustomStyle))
+        {
+            styles.Add(toast.Message.CustomStyle);
+        }
+
+        // Loading cursor
+        if (toast.Message.Type == ToastType.Loading)
+        {
+            styles.Add("cursor: wait;");
+        }
+
+        // Clickable cursor
+        else if (toast.Message.CloseOnClick)
+        {
+            styles.Add("cursor: pointer;");
+        }
+
+        // Animation duration
+        styles.Add($"--animation-duration: {toast.Message.Animation.Duration}ms;");
+
+        return string.Join(" ", styles);
+    }
+
+    private ToastTheme GetResolvedTheme(ToastMessage toast)
+    {
+        if (toast.Theme != ToastTheme.System && toast.Theme != ToastTheme.Auto)
+            return toast.Theme;
+
+        if (toast.Theme == ToastTheme.Auto)
+        {
+            // Simple auto-detection based on time (you could enhance this)
+            var hour = DateTime.Now.Hour;
+            return hour >= 6 && hour < 18 ? ToastTheme.Light : ToastTheme.Dark;
+        }
+
+        return _systemTheme;
+
+    }
+
+    private static string GetPositionClass(ToastPosition pos) => pos switch
+    {
+        ToastPosition.TopRight => "zl-blazor-toast-position-top-right",
+        ToastPosition.TopLeft => "zl-blazor-toast-position-top-left",
+        ToastPosition.BottomRight => "zl-blazor-toast-position-bottom-right",
+        ToastPosition.BottomLeft => "zl-blazor-toast-position-bottom-left",
+        ToastPosition.TopCenter => "zl-blazor-toast-position-top-center",
+        ToastPosition.BottomCenter => "zl-blazor-toast-position-bottom-center",
+        _ => "zl-blazor-toast-position-top-right"
+    };
+
+    private static string GetPositionAriaLabel(ToastPosition pos) => pos switch
+    {
+        ToastPosition.TopRight => "Notifications - Top Right",
+        ToastPosition.TopLeft => "Notifications - Top Left",
+        ToastPosition.BottomRight => "Notifications - Bottom Right",
+        ToastPosition.BottomLeft => "Notifications - Bottom Left",
+        ToastPosition.TopCenter => "Notifications - Top Center",
+        ToastPosition.BottomCenter => "Notifications - Bottom Center",
+        _ => "Notifications"
+    };
+
+    private async Task PlayToastSound(ToastMessage toast)
+    {
+        if (!string.IsNullOrEmpty(toast.SoundUrl))
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("BlazorToastJsServices.playSound", toast.SoundUrl);
+            }
+            catch
+            {
+                // Silent fail if JS interop fails
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (!_isDisposed)
+        {
+            ToastService.OnToastsChanged -= UpdateToasts;
+            _isDisposed = true;
+        }
+    }
+}

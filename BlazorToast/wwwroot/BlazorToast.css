@@ -1,0 +1,1045 @@
+﻿/* =================================================================
+   BlazorToast Library - Complete CSS Styles
+   Covers all Razor component classes and functionality
+   ================================================================= */
+
+/* =================================================================
+   CSS Custom Properties (Variables)
+   ================================================================= */
+:root {
+    /* Toast Colors - Light Theme */
+    --zl-blazor-toast-success: #10b981;
+    --zl-blazor-toast-success-bg: #d1fae5;
+    --zl-blazor-toast-success-text: #065f46;
+    --zl-blazor-toast-success-border: #10b981;
+    --zl-blazor-toast-error: #ef4444;
+    --zl-blazor-toast-error-bg: #fee2e2;
+    --zl-blazor-toast-error-text: #991b1b;
+    --zl-blazor-toast-error-border: #ef4444;
+    --zl-blazor-toast-warning: #f59e0b;
+    --zl-blazor-toast-warning-bg: #fef3c7;
+    --zl-blazor-toast-warning-text: #92400e;
+    --zl-blazor-toast-warning-border: #f59e0b;
+    --zl-blazor-toast-info: #3b82f6;
+    --zl-blazor-toast-info-bg: #dbeafe;
+    --zl-blazor-toast-info-text: #1e40af;
+    --zl-blazor-toast-info-border: #3b82f6;
+    --zl-blazor-toast-loading: #6b7280;
+    --zl-blazor-toast-loading-bg: #f3f4f6;
+    --zl-blazor-toast-loading-text: #374151;
+    --zl-blazor-toast-loading-border: #6b7280;
+    --zl-blazor-toast-custom: #8b5cf6;
+    --zl-blazor-toast-custom-bg: #f3f4f6;
+    --zl-blazor-toast-custom-text: #374151;
+    --zl-blazor-toast-custom-border: #d1d5db;
+    /* Dimensions */
+    --zl-blazor-toast-min-width: 320px;
+    --zl-blazor-toast-max-width: 480px;
+    --zl-blazor-toast-padding: 16px;
+    --zl-blazor-toast-border-radius: 12px;
+    --zl-blazor-toast-gap: 12px;
+    --zl-blazor-toast-icon-size: 20px;
+    /* Animation Properties */
+    --zl-blazor-toast-animation-duration: 0.3s;
+    --zl-blazor-toast-animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    /* Shadows */
+    --zl-blazor-toast-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --zl-blazor-toast-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    /* Z-index */
+    --zl-blazor-toast-z-index: 9999;
+    /* Progress bar */
+    --zl-blazor-toast-progress-height: 4px;
+    --zl-blazor-toast-progress-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* =================================================================
+   Main Toast Container
+   ================================================================= */
+.zl-blazor-toast-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: var(--zl-blazor-toast-z-index);
+}
+
+/* =================================================================
+   Position Wrappers
+   ================================================================= */
+.zl-blazor-toast-position-wrapper {
+    position: fixed;
+    z-index: var(--zl-blazor-toast-z-index);
+    display: flex;
+    flex-direction: column;
+    gap: var(--zl-blazor-toast-gap);
+    pointer-events: none;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+    .zl-blazor-toast-position-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+/* Top Positions */
+.zl-blazor-toast-position-top-right {
+    top: 20px;
+    right: 20px;
+    align-items: flex-end;
+}
+
+.zl-blazor-toast-position-top-left {
+    top: 20px;
+    left: 20px;
+    align-items: flex-start;
+}
+
+.zl-blazor-toast-position-top-center {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+}
+
+/* Bottom Positions */
+.zl-blazor-toast-position-bottom-right {
+    bottom: 20px;
+    right: 20px;
+    align-items: flex-end;
+    flex-direction: column-reverse;
+}
+
+.zl-blazor-toast-position-bottom-left {
+    bottom: 20px;
+    left: 20px;
+    align-items: flex-start;
+    flex-direction: column-reverse;
+}
+
+.zl-blazor-toast-position-bottom-center {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    flex-direction: column-reverse;
+}
+
+/* =================================================================
+   Toast Base Styles
+   ================================================================= */
+.zl-blazor-toast {
+    min-width: var(--zl-blazor-toast-min-width);
+    max-width: var(--zl-blazor-toast-max-width);
+    padding: var(--zl-blazor-toast-padding);
+    border-radius: var(--zl-blazor-toast-border-radius);
+    box-shadow: var(--zl-blazor-toast-shadow);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    border: 1px solid transparent;
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--animation-duration, var(--zl-blazor-toast-animation-duration)) var(--zl-blazor-toast-animation-easing);
+    background-color: white;
+    color: #374151;
+}
+
+    .zl-blazor-toast:hover {
+        box-shadow: var(--zl-blazor-toast-shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    .zl-blazor-toast:active {
+        transform: translateY(-1px);
+    }
+
+    /* Focus styles for accessibility */
+    .zl-blazor-toast:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+/* =================================================================
+   Toast Type Styles
+   ================================================================= */
+.zl-blazor-toast-success {
+    background-color: var(--zl-blazor-toast-success-bg);
+    color: var(--zl-blazor-toast-success-text);
+    border-color: var(--zl-blazor-toast-success-border);
+}
+
+    .zl-blazor-toast-success::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--zl-blazor-toast-success);
+        border-radius: var(--zl-blazor-toast-border-radius) 0 0 var(--zl-blazor-toast-border-radius);
+    }
+
+.zl-blazor-toast-error {
+    background-color: var(--zl-blazor-toast-error-bg);
+    color: var(--zl-blazor-toast-error-text);
+    border-color: var(--zl-blazor-toast-error-border);
+}
+
+    .zl-blazor-toast-error::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--zl-blazor-toast-error);
+        border-radius: var(--zl-blazor-toast-border-radius) 0 0 var(--zl-blazor-toast-border-radius);
+    }
+
+.zl-blazor-toast-warning {
+    background-color: var(--zl-blazor-toast-warning-bg);
+    color: var(--zl-blazor-toast-warning-text);
+    border-color: var(--zl-blazor-toast-warning-border);
+}
+
+    .zl-blazor-toast-warning::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--zl-blazor-toast-warning);
+        border-radius: var(--zl-blazor-toast-border-radius) 0 0 var(--zl-blazor-toast-border-radius);
+    }
+
+.zl-blazor-toast-info {
+    background-color: var(--zl-blazor-toast-info-bg);
+    color: var(--zl-blazor-toast-info-text);
+    border-color: var(--zl-blazor-toast-info-border);
+}
+
+    .zl-blazor-toast-info::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--zl-blazor-toast-info);
+        border-radius: var(--zl-blazor-toast-border-radius) 0 0 var(--zl-blazor-toast-border-radius);
+    }
+
+.zl-blazor-toast-loading {
+    background-color: var(--zl-blazor-toast-loading-bg);
+    color: var(--zl-blazor-toast-loading-text);
+    border-color: var(--zl-blazor-toast-loading-border);
+}
+
+    .zl-blazor-toast-loading::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--zl-blazor-toast-loading);
+        border-radius: var(--zl-blazor-toast-border-radius) 0 0 var(--zl-blazor-toast-border-radius);
+    }
+
+.zl-blazor-toast-custom {
+    background-color: var(--zl-blazor-toast-custom-bg);
+    color: var(--zl-blazor-toast-custom-text);
+    border-color: var(--zl-blazor-toast-custom-border);
+}
+
+    .zl-blazor-toast-custom::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--zl-blazor-toast-custom);
+        border-radius: var(--zl-blazor-toast-border-radius) 0 0 var(--zl-blazor-toast-border-radius);
+    }
+
+/* =================================================================
+   Toast State Classes
+   ================================================================= */
+.zl-blazor-toast.zl-loading {
+    cursor: wait;
+}
+
+.zl-blazor-toast.zl-persistent {
+    /* Persistent toasts can have special styling */
+    border-width: 2px;
+}
+
+.zl-blazor-toast.zl-important {
+    /* Important toasts for screen readers */
+    border-left-width: 6px;
+}
+
+.zl-blazor-toast.zl-has-progress {
+    padding-bottom: calc(var(--zl-blazor-toast-padding) + var(--zl-blazor-toast-progress-height) + 8px);
+}
+
+.zl-blazor-toast.zl-has-actions {
+    /* Additional space for action buttons */
+    min-height: 70px;
+}
+
+/* =================================================================
+   Progress Bar
+   ================================================================= */
+.zl-blazor-toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--zl-blazor-toast-progress-height);
+    background-color: var(--zl-blazor-toast-progress-bg);
+    border-radius: 0 0 var(--zl-blazor-toast-border-radius) var(--zl-blazor-toast-border-radius);
+    overflow: hidden;
+}
+
+.zl-blazor-toast-progress-bar {
+    height: 100%;
+    background-color: currentColor;
+    transition: width 0.3s ease;
+    opacity: 0.7;
+}
+
+    .zl-blazor-toast-progress-bar.zl-animated {
+        background-image: linear-gradient( 45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent );
+        background-size: 1rem 1rem;
+        animation: zl-progress-stripes 1s linear infinite;
+    }
+
+@keyframes zl-progress-stripes {
+    0% {
+        background-position: 1rem 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+/* =================================================================
+   Custom Content
+   ================================================================= */
+.zl-blazor-toast-custom-content {
+    flex: 1;
+    width: 100%;
+}
+
+/* =================================================================
+   Icon Section
+   ================================================================= */
+.zl-blazor-toast-icon {
+    flex-shrink: 0;
+    width: var(--zl-blazor-toast-icon-size);
+    height: var(--zl-blazor-toast-icon-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-top: 2px;
+}
+
+    .zl-blazor-toast-icon.zl-icon {
+        /* Base icon styling */
+    }
+
+    .zl-blazor-toast-icon.zl-loading-icon {
+        /* Loading icon specific styling */
+    }
+
+/* Loading Spinner */
+.zl-blazor-toast-loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: zl-spin 1s linear infinite;
+}
+
+@keyframes zl-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =================================================================
+   Content Section
+   ================================================================= */
+.zl-blazor-toast-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zl-blazor-toast-message {
+    font-weight: 500;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+/* =================================================================
+   Action Buttons
+   ================================================================= */
+.zl-blazor-toast-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.zl-blazor-toast-action-button {
+    background: none;
+    border: 1px solid currentColor;
+    color: inherit;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-height: 32px;
+}
+
+    .zl-blazor-toast-action-button:hover {
+        background-color: currentColor;
+        color: var(--zl-blazor-toast-success-bg);
+        transform: translateY(-1px);
+    }
+
+    .zl-blazor-toast-action-button:active {
+        transform: translateY(0);
+    }
+
+    .zl-blazor-toast-action-button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    .zl-blazor-toast-action-button.zl-primary {
+        background-color: currentColor;
+        color: white;
+    }
+
+        .zl-blazor-toast-action-button.zl-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+    .zl-blazor-toast-action-button.zl-secondary {
+        /* Secondary button styling is handled by default styles */
+    }
+
+/* =================================================================
+   Close Button
+   ================================================================= */
+.zl-blazor-toast-close-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    opacity: 0.7;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -2px;
+}
+
+    .zl-blazor-toast-close-button:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.1);
+        transform: scale(1.1);
+    }
+
+    .zl-blazor-toast-close-button:active {
+        transform: scale(0.95);
+    }
+
+    .zl-blazor-toast-close-button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+/* =================================================================
+   Accessibility - Screen Reader Only
+   ================================================================= */
+.zl-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* =================================================================
+   Theme System
+   ================================================================= */
+.zl-theme-light {
+    --zl-blazor-toast-success-bg: #d1fae5;
+    --zl-blazor-toast-success-text: #065f46;
+    --zl-blazor-toast-error-bg: #fee2e2;
+    --zl-blazor-toast-error-text: #991b1b;
+    --zl-blazor-toast-warning-bg: #fef3c7;
+    --zl-blazor-toast-warning-text: #92400e;
+    --zl-blazor-toast-info-bg: #dbeafe;
+    --zl-blazor-toast-info-text: #1e40af;
+    --zl-blazor-toast-loading-bg: #f3f4f6;
+    --zl-blazor-toast-loading-text: #374151;
+    --zl-blazor-toast-custom-bg: #f9fafb;
+    --zl-blazor-toast-custom-text: #374151;
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+.zl-theme-dark {
+    --zl-blazor-toast-success-bg: rgba(16, 185, 129, 0.15);
+    --zl-blazor-toast-success-text: #34d399;
+    --zl-blazor-toast-error-bg: rgba(239, 68, 68, 0.15);
+    --zl-blazor-toast-error-text: #f87171;
+    --zl-blazor-toast-warning-bg: rgba(245, 158, 11, 0.15);
+    --zl-blazor-toast-warning-text: #fbbf24;
+    --zl-blazor-toast-info-bg: rgba(59, 130, 246, 0.15);
+    --zl-blazor-toast-info-text: #60a5fa;
+    --zl-blazor-toast-loading-bg: rgba(107, 114, 128, 0.15);
+    --zl-blazor-toast-loading-text: #9ca3af;
+    --zl-blazor-toast-custom-bg: rgba(55, 65, 81, 0.15);
+    --zl-blazor-toast-custom-text: #d1d5db;
+    background-color: rgba(17, 24, 39, 0.95);
+    border-color: rgba(55, 65, 81, 0.3);
+}
+
+.zl-theme-system {
+    /* System theme will be handled by media queries */
+}
+
+.zl-theme-auto {
+    /* Auto theme will be handled by JavaScript */
+}
+
+/* =================================================================
+   Animation Classes
+   ================================================================= */
+/* Fade Animations */
+.zl-fade-in {
+    animation: zl-fade-in var(--animation-duration, 0.3s) ease forwards;
+}
+
+.zl-fade-out {
+    animation: zl-fade-out var(--animation-duration, 0.3s) ease forwards;
+}
+
+/* Slide Animations */
+.zl-slide-in-right {
+    animation: zl-slide-in-right var(--animation-duration, 0.4s) cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.zl-slide-out-right {
+    animation: zl-slide-out-right var(--animation-duration, 0.4s) cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+.zl-slide-in-left {
+    animation: zl-slide-in-left var(--animation-duration, 0.4s) cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.zl-slide-out-left {
+    animation: zl-slide-out-left var(--animation-duration, 0.4s) cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+.zl-slide-in-up {
+    animation: zl-slide-in-up var(--animation-duration, 0.4s) cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.zl-slide-out-up {
+    animation: zl-slide-out-up var(--animation-duration, 0.4s) cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+.zl-slide-in-down {
+    animation: zl-slide-in-down var(--animation-duration, 0.4s) cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.zl-slide-out-down {
+    animation: zl-slide-out-down var(--animation-duration, 0.4s) cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+/* Bounce Animations */
+.zl-bounce-in {
+    animation: zl-bounce-in var(--animation-duration, 0.5s) cubic-bezier(0.68, -0.6, 0.32, 1.6) forwards;
+}
+
+.zl-bounce-out {
+    animation: zl-bounce-out var(--animation-duration, 0.5s) cubic-bezier(0.68, -0.6, 0.32, 1.6) forwards;
+}
+
+/* Scale Animations */
+.zl-scale-in {
+    animation: zl-scale-in var(--animation-duration, 0.3s) ease forwards;
+}
+
+.zl-scale-out {
+    animation: zl-scale-out var(--animation-duration, 0.3s) ease forwards;
+}
+
+/* Flip Animations */
+.zl-flip-in {
+    animation: zl-flip-in var(--animation-duration, 0.6s) cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.zl-flip-out {
+    animation: zl-flip-out var(--animation-duration, 0.45s) cubic-bezier(0.55, 0.09, 0.68, 0.53) both;
+}
+
+/* Shake Animation */
+.zl-shake {
+    animation: zl-shake var(--animation-duration, 0.5s) cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Spin Animations */
+.zl-spin-in {
+    animation: zl-spin-in var(--animation-duration, 0.5s) ease both;
+}
+
+.zl-spin-out {
+    animation: zl-spin-out var(--animation-duration, 0.5s) ease both;
+}
+
+/* Elastic Animations */
+.zl-elastic-in {
+    animation: zl-elastic-in var(--animation-duration, 0.6s) cubic-bezier(0.68, -0.6, 0.32, 1.6) forwards;
+}
+
+.zl-elastic-out {
+    animation: zl-elastic-out var(--animation-duration, 0.6s) cubic-bezier(0.68, -0.6, 0.32, 1.6) forwards;
+}
+
+/* Zoom Animations */
+.zl-zoom-in {
+    animation: zl-zoom-in var(--animation-duration, 0.3s) ease forwards;
+}
+
+.zl-zoom-out {
+    animation: zl-zoom-out var(--animation-duration, 0.3s) ease forwards;
+}
+
+/* =================================================================
+   Animation Keyframes
+   ================================================================= */
+@keyframes zl-fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes zl-fade-out {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes zl-slide-in-right {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes zl-slide-out-right {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-slide-in-left {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes zl-slide-out-left {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-slide-in-up {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes zl-slide-out-up {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-slide-in-down {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes zl-slide-out-down {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-bounce-in {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes zl-bounce-out {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-scale-in {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes zl-scale-out {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-flip-in {
+    0% {
+        transform: perspective(400px) rotateY(90deg);
+        opacity: 0;
+    }
+
+    100% {
+        transform: perspective(400px) rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes zl-flip-out {
+    0% {
+        transform: perspective(400px) rotateY(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: perspective(400px) rotateY(90deg);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes zl-spin-in {
+    0% {
+        transform: rotate(-180deg) scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes zl-spin-out {
+    0% {
+        transform: rotate(0deg) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotate(180deg) scale(0.5);
+        opacity: 0;
+    }
+}
+
+@keyframes zl-elastic-in {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes zl-elastic-out {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .zl-blazor-toast,
+    [class^="zl-"] {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* =================================================================
+   Hidden Toast Count Section
+   ================================================================= */
+.zl-blazor-toast-hidden-count {
+    min-width: var(--zl-blazor-toast-min-width);
+    max-width: var(--zl-blazor-toast-max-width);
+    padding: 12px var(--zl-blazor-toast-padding);
+    border-radius: var(--zl-blazor-toast-border-radius);
+    box-shadow: var(--zl-blazor-toast-shadow);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+    cursor: pointer;
+    transition: all 0.2s var(--zl-blazor-toast-animation-easing);
+    text-align: center;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    /* Default styling - adapts to theme */
+    background-color: rgba(107, 114, 128, 0.95);
+    color: white;
+    border-left: 4px solid #6b7280;
+}
+
+    .zl-blazor-toast-hidden-count:hover {
+        box-shadow: var(--zl-blazor-toast-shadow-hover);
+        transform: translateY(-2px);
+        background-color: rgba(107, 114, 128, 1);
+    }
+
+    .zl-blazor-toast-hidden-count:active {
+        transform: translateY(-1px);
+        box-shadow: var(--zl-blazor-toast-shadow);
+    }
+
+    /* Focus styles for accessibility */
+    .zl-blazor-toast-hidden-count:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    /* Add a subtle pulse animation to draw attention */
+    .zl-blazor-toast-hidden-count::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        animation: zl-hidden-count-pulse 2s ease-in-out infinite;
+        pointer-events: none;
+        border-radius: var(--zl-blazor-toast-border-radius);
+    }
+
+/* Theme variations for hidden count */
+.zl-theme-light .zl-blazor-toast-hidden-count {
+    background-color: rgba(243, 244, 246, 0.95);
+    color: #374151;
+    border-color: #d1d5db;
+    border-left-color: #6b7280;
+}
+
+    .zl-theme-light .zl-blazor-toast-hidden-count:hover {
+        background-color: rgba(243, 244, 246, 1);
+        color: #111827;
+    }
+
+.zl-theme-dark .zl-blazor-toast-hidden-count {
+    background-color: rgba(55, 65, 81, 0.95);
+    color: #d1d5db;
+    border-color: rgba(75, 85, 99, 0.5);
+    border-left-color: #9ca3af;
+}
+
+    .zl-theme-dark .zl-blazor-toast-hidden-count:hover {
+        background-color: rgba(55, 65, 81, 1);
+        color: #f9fafb;
+    }
+
+/* Pulse animation for hidden count */
+@keyframes zl-hidden-count-pulse {
+    0%, 100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 480px) {
+    .zl-blazor-toast-hidden-count {
+        min-width: auto;
+        max-width: calc(100vw - 40px);
+        font-size: 12px;
+        padding: 10px 16px;
+    }
+}

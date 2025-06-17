@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<!-- Target Framework -->
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<!-- Razor Compilation -->
+		<RazorCompileOnBuild>true</RazorCompileOnBuild>
+		<RazorCompileOnPublish>true</RazorCompileOnPublish>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+
+		<!-- NuGet Package Metadata -->
+		<PackageId>BlazorToast</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Zalla Abdessamed</Authors>
+		<Description>
+			BlazorToast: A lightweight, modern well‑styled, customizable toast notification library for Blazor applications.
+		</Description>
+		<PackageTags>
+			razor;class-library;ui;toast;modern;blazor;notification;component;net8;customizable
+		</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+
+		<!-- Package Build Options -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<IncludeSource>true</IncludeSource>
+	</PropertyGroup>
+
+	<!-- For Blazor WebAssembly compatibility -->
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<!-- References needed for Blazor components -->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.6" />
+	</ItemGroup>
+
+	<!-- Include additional content in NuGet package -->
+	<ItemGroup>
+		<None Include="icon.png" Pack="true" PackagePath="" />
+		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="LICENSE.txt" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+</Project>
