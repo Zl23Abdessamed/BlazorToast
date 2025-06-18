@@ -1,4 +1,4 @@
-﻿# ZLBlazorToast
+﻿# Blazor-Toast
 
 A comprehensive and feature-rich toast notification library for Blazor applications with extensive customization options, animations, and accessibility support.
 
@@ -24,13 +24,13 @@ A comprehensive and feature-rich toast notification library for Blazor applicati
 Install the package via NuGet Package Manager:
 
 ```bash
-dotnet add package ZLBlazorToast
+dotnet add package Blazor-Toast
 ```
 
 Or via Package Manager Console:
 
 ```powershell
-Install-Package ZLBlazorToast
+Install-Package Blazor-Toast
 ```
 
 ## Setup
@@ -65,10 +65,10 @@ Add the following to your `_Host.cshtml` (Blazor Server) or `index.html` (Blazor
 
 ```html
 <!-- Required CSS -->
-<link href="_content/Zl-Blazor-Toast-Lib/BlazorToast.css" rel="stylesheet" />
+<link href="_content/Blazor-Toast/BlazorToast.css" rel="stylesheet" />
 
 <!-- Optional: For dark mode detection and sound support -->
-<script src="_content/Zl-Blazor-Toast-Lib/BlazorToastJsServices.js"></script>
+<script src="_content/Blazor-Toast/BlazorToastJsServices.js"></script>
 ```
 
 ### 3. Add the Component
@@ -423,22 +423,26 @@ toast.BeforeDismiss = async () =>
 | `DismissAll(ToastType?, string?)` | Dismiss multiple toasts |
 | `ClearAll()` | Clear all toasts |
 
+## Demo & Showcase
+
+Check out the live demo and showcase of BlazorToast features:
+
+- **Live Demo**: [https://zl23abdessamed.github.io/BlazorToastWebTest/](https://zl23abdessamed.github.io/BlazorToastWebTest/)
 
 ## GitHub Repository
 
-The source code for [ZLBlazorToast](https://github.com/Zl23Abdessamed/Zl-Blazor-Toast) is available on GitHub. You can explore the codebase, report issues, or contribute to the project:
+The source code for BlazorToast is available on GitHub. You can explore the codebase, report issues, or contribute to the project:
 
-- **Repository**: [[ZLBlazorToast](https://github.com/Zl23Abdessamed/Zl-Blazor-Toast)](https://github.com/Zl23Abdessamed/Zl-Blazor-Toast)
-- **Issues**: Submit bugs or feature requests [here](https://github.com/Zl23Abdessamed/Zl-Blazor-Toast/issues)
-
+- **Repository**: [https://github.com/Zl23Abdessamed/BlazorToast/](https://github.com/Zl23Abdessamed/BlazorToast/)
+- **Issues**: Submit bugs or feature requests [here](https://github.com/Zl23Abdessamed/BlazorToast/issues)
 
 ## Contact
 
 For questions, feedback, or support, you can reach out through the following channels:
 
-- **Email**: [support@zlblazortoast.com](mailto:a_zalla@estin.dz_)
-- **GitHub Discussions**: Join the conversation on [[ZLBlazorToast Discussions](https://github.com/Zl23Abdessamed/Zl-Blazor-Toast/discussions)](https://github.com/Zl23Abdessamed/Zl-Blazor-Toast/discussions)
-
+- **Email**: [a_zalla@estin.dz](mailto:a_zalla@estin.dz)
+- **GitHub Discussions**: Join the conversation on [BlazorToast Discussions](https://github.com/Zl23Abdessamed/BlazorToast/discussions)
+- **Discord**: Join our community server at [https://discord.gg/84X9nm3fKn](https://discord.gg/84X9nm3fKn)
 
 ## License
 

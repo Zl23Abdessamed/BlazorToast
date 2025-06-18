@@ -12,11 +12,11 @@
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 
 		<!-- NuGet Package Metadata -->
-		<PackageId>BlazorToast</PackageId>
+		<PackageId>Blazor-Toast</PackageId>
 		<Version>1.0.0</Version>
 		<Authors>Zalla Abdessamed</Authors>
 		<Description>
-			BlazorToast: A lightweight, modern well‑styled, customizable toast notification library for Blazor applications.
+			Blazor-Toast: A lightweight, modern well‑styled, customizable toast notification library for Blazor applications.
 		</Description>
 		<PackageTags>
 			razor;class-library;ui;toast;modern;blazor;notification;component;net8;customizable
@@ -24,6 +24,9 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>
+		<PackageProjectUrl>https://zl23abdessamed.github.io/BlazorToastWebTest/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Zl23Abdessamed/BlazorToast</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 
 		<!-- Package Build Options -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
